@@ -2,14 +2,20 @@
     xpozytywne/2,
     xnegatywne/2.
 
-piwo_jest(lager) :- jest(jasne).
-piwo_jest(porter) :- jest(ciemne).
+piwo_jest(lager) :- barwa_jest(jasne).
+piwo_jest(porter) :- barwa_jest(ciemne).
 
-jest(jasne) :- pozytywne(czy,klasyczne).
+barwa_jest(jasne) :- pozytywne(czy,klasyczne).
+barwa_jest(jasne) :- negatywne(dopuszczalne,eksperymentowanie).
+barwa_jest(ciemne) :- lubi(kawa).
 
-jest(jasne) :- negatywne(dopuszczalne,eksperymentowanie).
+goryczka_jest(mala) :- lubi(piwo_wielkich_browarow).
+goryczka_jest(srednia) :- lubi(kawa).
+goryczka_jest(duza) :- lubi(bardzo_gorzki_smak).
 
-jest(ciemne) :- lubi(kawa).
+zapach_jest(slodowy) :- lubi(zwyczajne_piwo).
+zapach_jest(owocowy) :- lubi(owoce).
+zapach_jest(mocno_alkoholowy) :- lubi(mocne_alkohole).
 
 pozytywne(X,Y) :- xpozytywne(X,Y), !.
 
