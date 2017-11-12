@@ -1,70 +1,52 @@
 :- dynamic
-    xpozytywne/2,
-    xnegatywne/2.
+    xlubi/1,
+    xnie_lubi/1.
 
-piwo_jest(lager) :- barwa_jest(jasne).
-piwo_jest(lager) :- zapach_jest(slodowy).
-piwo_jest(lager) :- goryczka_jest(mala).
+piwo_jest(lager) :- barwa_jest(jasne), zapach_jest(slodowy).
+piwo_jest(lager) :- barwa_jest(jasne), goryczka_jest(mala).
 
-piwo_jest(ipa) :- barwa_jest(jasne).
-piwo_jest(ipa) :- zapach_jest(owocowy).
-piwo_jest(ipa) :- goryczka_jest(srednia).
+piwo_jest(ipa) :- barwa_jest(jasne), zapach_jest(owocowy).
+piwo_jest(ipa) :- barwa_jest(jasne), goryczka_jest(srednia).
 
-piwo_jest(double_ipa) :- barwa_jest(jasne).
-piwo_jest(double_ipa) :- zapach_jest(owocowy).
-piwo_jest(double_ipa) :- goryczka_jest(duza).
+piwo_jest(double_ipa) :- barwa_jest(jasne), zapach_jest(owocowy).
+piwo_jest(double_ipa) :- barwa_jest(jasne), goryczka_jest(duza).
 
 piwo_jest(porter) :- barwa_jest(ciemne).
 
-barwa_jest(jasne) :- pozytywne(czy,klasyczne).
-barwa_jest(jasne) :- negatywne(dopuszczalne,eksperymentowanie).
+barwa_jest(jasne) :- lubi(klasyczne_piwo).
+barwa_jest(jasne) :- nie_lubi(piwne_eksperymenty).
 barwa_jest(ciemne) :- lubi(kawa).
 
 goryczka_jest(mala) :- lubi(piwo_wielkich_browarow).
 goryczka_jest(srednia) :- lubi(kawa).
 goryczka_jest(duza) :- lubi(bardzo_gorzki_smak).
 
-zapach_jest(slodowy) :- lubi(zwyczajne_piwo).
+zapach_jest(slodowy) :- lubi(klasyczne_piwo).
 zapach_jest(owocowy) :- lubi(owoce).
 zapach_jest(mocno_alkoholowy) :- lubi(mocne_alkohole).
 
-pozytywne(X,Y) :- xpozytywne(X,Y), !.
+lubi(X) :- xlubi(X), !.
+lubi(X) :- \+xnie_lubi(X), pytaj(X,tak).
 
-pozytywne(X,Y) :- \+xnegatywne(X,Y), pytaj(X,Y,tak).
+nie_lubi(X) :- xnie_lubi(X), !.
+nie_lubi(X) :- \+xlubi(X), pytaj(X,nie).
 
-negatywne(X,Y) :- xnegatywne(X,Y), !.
-
-negatywne(X,Y) :- \+xpozytywne(X,Y), pytaj(X,Y,nie).
-
-lubi(X) :- czy_lubi(X,tak).
-
-czy_lubi(X,tak) :- !, format('Czy lubisz ~w? (t/n)~n',[X]),
+pytaj(X,tak) :- !, format('Czy lubisz ~w ? (t/n)~n',[X]),
                     read(Reply),
                     (Reply = 't'),
-                    pamietaj(X,lubi,tak).
+                    pamietaj(X,tak).
 
-czy_lubi(X,nie) :- !, format('Czy lubisz ~w? (t/n)~n',[X]),
+pytaj(X,nie) :- !, format('Czy lubisz ~w ? (t/n)~n',[X]),
                     read(Reply),
                     (Reply = 'n'),
-                    pamietaj(X,lubi,nie).
+                    pamietaj(X,nie).
 
-pytaj(X,Y,tak) :- !, format('~w jest ~w ? (t/n)~n',[X,Y]),
-                    read(Reply),
-                    (Reply = 't'),
-                    pamietaj(X,Y,tak).
-
-pytaj(X,Y,nie) :- !, format('~w jest ~w ? (t/n)~n',[X,Y]),
-                    read(Reply),
-                    (Reply = 'n'),
-                    pamietaj(X,Y,nie).
-
-pamietaj(X,Y,tak) :- assertz(xpozytywne(X,Y)).
-
-pamietaj(X,Y,nie) :- assertz(xnegatywne(X,Y)).
+pamietaj(X,tak) :- assertz(xlubi(X)).
+pamietaj(X,nie) :- assertz(xnie_lubi(X)).
 
 wyczysc_fakty :- write('Przycisnij cos aby wyjsc'), nl,
-                    retractall(xpozytywne(_,_)),
-                    retractall(xnegatywne(_,_)),
+                    retractall(xlubi(_,_)),
+                    retractall(xnie_lubi(_,_)),
                     get_char(_).
 
 wykonaj :- piwo_jest(X), !,
