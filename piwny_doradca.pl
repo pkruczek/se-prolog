@@ -3,6 +3,17 @@
     xnegatywne/2.
 
 piwo_jest(lager) :- barwa_jest(jasne).
+piwo_jest(lager) :- zapach_jest(slodowy).
+piwo_jest(lager) :- goryczka_jest(mala).
+
+piwo_jest(ipa) :- barwa_jest(jasne).
+piwo_jest(ipa) :- zapach_jest(owocowy).
+piwo_jest(ipa) :- goryczka_jest(srednia).
+
+piwo_jest(double_ipa) :- barwa_jest(jasne).
+piwo_jest(double_ipa) :- zapach_jest(owocowy).
+piwo_jest(double_ipa) :- goryczka_jest(duza).
+
 piwo_jest(porter) :- barwa_jest(ciemne).
 
 barwa_jest(jasne) :- pozytywne(czy,klasyczne).
