@@ -1,57 +1,87 @@
-:- dynamic
-    xlubi/1,
-    xnie_lubi/1.
+% Expert system should be started from here
+main :-
+  intro,
+  reset_answers,
+  find_beer(Beer),
+  describe(Beer), nl.
 
-piwo_jest(lager) :- barwa_jest(jasne), zapach_jest(slodowy).
-piwo_jest(lager) :- barwa_jest(jasne), goryczka_jest(mala).
 
-piwo_jest(ipa) :- barwa_jest(jasne), zapach_jest(owocowy).
-piwo_jest(ipa) :- barwa_jest(jasne), goryczka_jest(srednia).
+intro :-
+  write('Which beer should I drink today?'), nl,
+  write('To answer, input the number shown next to each answer, followed by a dot (.)'), nl, nl.
 
-piwo_jest(double_ipa) :- barwa_jest(jasne), zapach_jest(owocowy).
-piwo_jest(double_ipa) :- barwa_jest(jasne), goryczka_jest(duza).
 
-piwo_jest(porter) :- barwa_jest(ciemne).
+find_beer(Beer) :-
+  beer(Beer), !.
 
-barwa_jest(jasne) :- lubi(klasyczne_piwo).
-barwa_jest(jasne) :- nie_lubi(piwne_eksperymenty).
-barwa_jest(ciemne) :- lubi(kawa).
 
-goryczka_jest(mala) :- lubi(piwo_wielkich_browarow).
-goryczka_jest(srednia) :- lubi(kawa).
-goryczka_jest(duza) :- lubi(bardzo_gorzki_smak).
+% Store user answers to be able to track his progress
+:- dynamic(progress/2).
 
-zapach_jest(slodowy) :- lubi(klasyczne_piwo).
-zapach_jest(owocowy) :- lubi(owoce).
-zapach_jest(mocno_alkoholowy) :- lubi(mocne_alkohole).
 
-lubi(X) :- xlubi(X), !.
-lubi(X) :- \+xnie_lubi(X), pytaj(X,tak).
+% Clear stored user progress
+% reset_answers must always return true; because retract can return either true
+% or false, we fail the first and succeed with the second.
+reset_answers :-
+  retract(progress(_, _)),
+  fail.
+reset_answers.
 
-nie_lubi(X) :- xnie_lubi(X), !.
-nie_lubi(X) :- \+xlubi(X), pytaj(X,nie).
 
-pytaj(X,tak) :- !, format('Czy lubisz ~w ? (t/n)~n',[X]),
-                    read(Reply),
-                    (Reply = 't'),
-                    pamietaj(X,tak).
+% Rules for the knowledge base
+beer(porter) :-
+  color(dark).
 
-pytaj(X,nie) :- !, format('Czy lubisz ~w ? (t/n)~n',[X]),
-                    read(Reply),
-                    (Reply = 'n'),
-                    pamietaj(X,nie).
+color(dark) :-
+  likes(coffee).
 
-pamietaj(X,tak) :- assertz(xlubi(X)).
-pamietaj(X,nie) :- assertz(xnie_lubi(X)).
+% Questions for the knowledge base
+question(likes) :-
+  write('What do you like?'), nl.
 
-wyczysc_fakty :- write('Przycisnij cos aby wyjsc'), nl,
-                    retractall(xlubi(_,_)),
-                    retractall(xnie_lubi(_,_)),
-                    get_char(_).
 
-wykonaj :- piwo_jest(X), !,
-            format('~nSpróbuj piwa ~w', X),
-            nl, wyczysc_fakty.
+% Answers for the knowledge base
+answer(coffee) :-
+  write('Coffee').
 
-wykonaj :- write('Nie można zaleźć piwa spełniającego Twoje wymagania.'), nl,
-            wyczysc_fakty.
+
+% Beer descriptions for the knowledge base
+describe(porter) :-
+  write('Porter'), nl,
+  write('Dark beer, very strong, good beer'), nl.
+
+
+% Assigns an answer to questions from the knowledge base
+likes(Answer) :-
+  progress(likes, Answer).
+likes(Answer) :-
+  \+ progress(likes, _),
+  ask(likes, Answer, [coffee]).
+
+
+% Outputs a nicely formatted list of answers
+% [First|Rest] is the Choices list, Index is the index of First in Choices
+answers([], _).
+answers([First|Rest], Index) :-
+  write(Index), write(' '), answer(First), nl,
+  NextIndex is Index + 1,
+  answers(Rest, NextIndex).
+
+
+% Parses an Index and returns a Response representing the "Indexth" element in
+% Choices (the [First|Rest] list)
+parse(0, [First|_], First).
+parse(Index, [First|Rest], Response) :-
+  Index > 0,
+  NextIndex is Index - 1,
+  parse(NextIndex, Rest, Response).
+
+
+% Asks the Question to the user and saves the Answer
+ask(Question, Answer, Choices) :-
+  question(Question),
+  answers(Choices, 0),
+  read(Index),
+  parse(Index, Choices, Response),
+  asserta(progress(Question, Response)),
+  Response = Answer.
