@@ -38,7 +38,7 @@ beer(porter) :-
   when(evening),
   how_much_time(little_time).
 
-beer(ipa) :- 
+beer(ipa) :-
   color(light),
   drinks(craft_beers),
   bitter(yes),
@@ -47,7 +47,7 @@ beer(ipa) :-
   likes(fruits),
   when(afternoon).
 
-beer(ipa) :- 
+beer(ipa) :-
   color(light),
   drinks(craft_beers),
   bitter(yes),
