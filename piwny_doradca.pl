@@ -38,8 +38,30 @@ beer(porter) :-
   when(evening),
   how_much_time(little_time).
 
+beer(ipa) :- 
+  color(light),
+  drinks(craft_beers),
+  bitter(yes),
+  eats(duck),
+  weather(sunny),
+  likes(fruits),
+  when(afternoon).
+
+beer(ipa) :- 
+  color(light),
+  drinks(craft_beers),
+  bitter(yes),
+  eats(nothing),
+  weather(sunny),
+  likes(fruits),
+  when(afternoon).
+
 color(dark) :-
-  likes(coffee).
+  likes(coffee),
+  classic(no).
+
+color(light) :-
+  classic(yes).
 
 % Questions for the knowledge base
 question(likes) :-
@@ -62,6 +84,9 @@ question(when) :-
 
 question(how_much_time) :-
   write('How much time do you have?'), nl.
+
+question(classic) :-
+  write('Do you want it to be more classic'), nl.
 
 % Answers for the knowledge base
 answer(yes) :-
@@ -93,6 +118,9 @@ answer(dessert) :-
 
 answer(something_fat) :-
   write('Something fat').
+
+answer(duck) :-
+  write('Duck').
 
 answer(sunny) :-
   write('Sunny').
@@ -126,6 +154,10 @@ describe(porter) :-
   write('Porter'), nl,
   write('Dark beer, very strong, good beer'), nl.
 
+describe(ipa) :-
+  write('India Pale Ale'), nl,
+  write('Bright beer, light, with fruit scent and flawour'), nl.
+
 % Assigns an answer to questions from the knowledge base
 likes(Answer) :-
   progress(likes, Answer).
@@ -149,7 +181,7 @@ eats(Answer) :-
   progress(eats, Answer).
 eats(Answer) :-
   \+ progress(eats, _),
-  ask(eats, Answer, [nothing, dessert, something_fat]).
+  ask(eats, Answer, [nothing, dessert, something_fat, duck]).
 
 weather(Answer) :-
   progress(weather, Answer).
@@ -168,6 +200,12 @@ how_much_time(Answer) :-
 how_much_time(Answer) :-
   \+ progress(how_much_time, _),
   ask(how_much_time, Answer, [a_lot_of_time, not_so_much_time, little_time]).
+
+classic(Answer) :-
+  progress(classic, Answer).
+classic(Answer) :-
+  \+ progress(classic, _),
+  ask(classic, Answer, [yes, no]).
 
 % Outputs a nicely formatted list of answers
 % [First|Rest] is the Choices list, Index is the index of First in Choices
