@@ -32,18 +32,38 @@ reset_answers.
 beer(porter) :-
   color(dark).
 
-color(dark) :-
-  likes(coffee).
+beer(ipa) :- 
+  color(light).
 
+color(dark) :-
+  likes(coffee)
+  classic(no_answer).
+
+color(light) :- 
+  classic(yes_answer).
+
+scent(tropical) :-
+  likes(friuts).
+ 
 % Questions for the knowledge base
 question(likes) :-
   write('What do you like?'), nl.
 
+question(classic) :-
+  write('Do you want your beer to be more classic?'), nl.
 
 % Answers for the knowledge base
 answer(coffee) :-
   write('Coffee').
 
+answer(friuts) :- 
+  write('Tropical Fruits').
+
+answer(yes_answer) :-
+  write('Yes').
+
+answer(no_answer) :-
+  write('No').
 
 % Beer descriptions for the knowledge base
 describe(porter) :-
@@ -56,8 +76,13 @@ likes(Answer) :-
   progress(likes, Answer).
 likes(Answer) :-
   \+ progress(likes, _),
-  ask(likes, Answer, [coffee]).
+  ask(likes, Answer, [coffee, friuts]).
 
+classic(Answer) :-
+  progress(classic, Answer).
+classic(Answer) :-
+  \+ progress(classic, _),
+  ask(classic, Answer, [yes_answer, no_answer]).
 
 % Outputs a nicely formatted list of answers
 % [First|Rest] is the Choices list, Index is the index of First in Choices
