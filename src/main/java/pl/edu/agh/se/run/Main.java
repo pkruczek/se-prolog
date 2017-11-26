@@ -3,8 +3,12 @@ package pl.edu.agh.se.run;
 import org.jpl7.JPL;
 import org.jpl7.Query;
 import org.jpl7.Term;
+import pl.edu.agh.se.client.Answer;
+import pl.edu.agh.se.gui.controller.BeerAdvisorController;
+import pl.edu.agh.se.gui.view.BeerAdvisorFrame;
 
 public class Main {
+
 
     public static void main(String[] args) {
 
@@ -20,6 +24,11 @@ public class Main {
 
         String t1 = "[piwny_doradca]";
         System.out.println(t1 + " " + (Query.hasSolution(t1) ? "succeeded" : "failed"));
+
+        BeerAdvisorController beerAdvisorController = new BeerAdvisorController();
+        beerAdvisorController.addAnswer(new Answer("Lager"));
+        beerAdvisorController.addAnswer(new Answer("Porter"));
+        beerAdvisorController.showWindow();
 
     }
 
