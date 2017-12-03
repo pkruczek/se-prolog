@@ -23,7 +23,10 @@ public class QuestionGui extends JFrame {
         super("BeerAdvisor");
         this.answers = Arrays.asList(answers);
 
-        setLayout(new GridLayout(answers.length + 2, 1));
+        setLocationRelativeTo(null);
+        setMinimumSize(Settings.DEFAULT_MIN_DIMENSIONS);
+        getRootPane().setBorder(Settings.DEFAULT_BORDER);
+        setLayout(new GridLayout(answers.length + 2, 1, 2, 2));
 
         createQuestionLabel(question);
         createRadios();

@@ -18,7 +18,10 @@ public class DescribeGui extends JFrame {
     public DescribeGui(String beer, String description) throws HeadlessException {
         super("BeerAdvisor");
 
-        setLayout(new GridLayout(3, 1));
+        setLocationRelativeTo(null);
+        setMinimumSize(Settings.DEFAULT_MIN_DIMENSIONS);
+        getRootPane().setBorder(Settings.DEFAULT_BORDER);
+        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 
         createBeerLabel(beer);
         createDescriptionArea(description);

@@ -2,6 +2,7 @@ package pl.edu.agh.se.run.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -12,7 +13,10 @@ public class IntroGui extends JFrame {
     public IntroGui() throws HeadlessException {
         super("BeerAdvisor");
 
-        setLayout(new GridLayout(2, 1));
+        setLocationRelativeTo(null);
+        setMinimumSize(Settings.DEFAULT_MIN_DIMENSIONS);
+        getRootPane().setBorder(Settings.DEFAULT_BORDER);
+        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 
         createIntroArea();
         createOkButton();
@@ -24,10 +28,6 @@ public class IntroGui extends JFrame {
         JTextArea descriptionArea = new JTextArea("Which beer should I drink today?\nAnswer some questions and you will know!");
         descriptionArea.setEditable(false);
         add(descriptionArea);
-    }
-
-    private void createBeerLabel(String beer) {
-        add(new JLabel(beer));
     }
 
     private void createOkButton() {
