@@ -1,3 +1,5 @@
+:- use_module(library(jpl)).
+
 % Expert system should be started from here
 main :-
   intro,
@@ -207,29 +209,11 @@ classic(Answer) :-
   \+ progress(classic, _),
   ask(classic, Answer, [yes, no]).
 
-% Outputs a nicely formatted list of answers
-% [First|Rest] is the Choices list, Index is the index of First in Choices
-answers([], _).
-answers([First|Rest], Index) :-
-  write(Index), write(' '), answer(First), nl,
-  NextIndex is Index + 1,
-  answers(Rest, NextIndex).
-
-
-% Parses an Index and returns a Response representing the "Indexth" element in
-% Choices (the [First|Rest] list)
-parse(0, [First|_], First).
-parse(Index, [First|Rest], Response) :-
-  Index > 0,
-  NextIndex is Index - 1,
-  parse(NextIndex, Rest, Response).
-
-
 % Asks the Question to the user and saves the Answer
 ask(Question, Answer, Choices) :-
   question(Question),
-  answers(Choices, 0),
-  read(Index), nl,
-  parse(Index, Choices, Response),
+  jpl_list_to_array(Choices, JavaArray),
+  jpl_call('pl.edu.agh.se.run.gui.QuestionGui', askQuestion, ['A question', JavaArray], AnInt),
+  write('An int:  '), write(AnInt),
   asserta(progress(Question, Response)),
   Response = Answer.
