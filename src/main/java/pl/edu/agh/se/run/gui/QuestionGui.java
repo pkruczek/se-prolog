@@ -1,14 +1,19 @@
 package pl.edu.agh.se.run.gui;
 
+import pl.edu.agh.se.run.utils.PropertiesReader;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 
 public class QuestionGui extends JFrame {
 
+    private static final Properties questionProperties = PropertiesReader.readProperties("questions.properties");
+    private static final Properties answersProperties = PropertiesReader.readProperties("answers.properties");
     private List<String> answers;
     private ButtonGroup buttonGroup = new ButtonGroup();
     private CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -33,12 +38,12 @@ public class QuestionGui extends JFrame {
     }
 
     private void createQuestionLabel(String question) {
-        add(new JLabel(question));
+        add(new JLabel(questionProperties.getProperty(question)));
     }
 
     private void createRadios() {
         for (String answer : answers) {
-            JRadioButton radioButton = new JRadioButton(answer);
+            JRadioButton radioButton = new JRadioButton(answersProperties.getProperty(answer));
             radioButton.setActionCommand(answer);
             add(radioButton);
             buttonGroup.add(radioButton);

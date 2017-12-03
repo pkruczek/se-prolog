@@ -1,13 +1,17 @@
 package pl.edu.agh.se.run.gui;
 
+import pl.edu.agh.se.run.utils.PropertiesReader;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 
 public class DescribeGui extends JFrame {
+
+    private static final Properties descriptionsProperties = PropertiesReader.readProperties("descriptions.properties");
+    private static final Properties namesProperties = PropertiesReader.readProperties("names.properties");
 
     private CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -42,8 +46,8 @@ public class DescribeGui extends JFrame {
         add(okBtn);
     }
 
-    public static void describe(String beer, String description) {
-        DescribeGui describeGui = new DescribeGui(beer, description);
+    public static void describe(String beer) {
+        DescribeGui describeGui = new DescribeGui(namesProperties.getProperty(beer), descriptionsProperties.getProperty(beer));
         describeGui.setVisible(true);
         try {
             describeGui.countDownLatch.await();
@@ -52,12 +56,8 @@ public class DescribeGui extends JFrame {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        String[] answers = {"one", "two"};
 
-        describe("Beer1", "Good beer");
-        describe("Beer2", "Good beer");
-        describe("Beer3", "Good beer");
-
+    public static void main(String[] args) {
+        describe("ipa");
     }
 }
