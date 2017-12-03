@@ -32,8 +32,8 @@ public class QuestionGui extends JFrame {
         return answered;
     }
 
-    private Component createQuestionLabel(String question) {
-        return add(new JLabel(question));
+    private void createQuestionLabel(String question) {
+        add(new JLabel(question));
     }
 
     private void createRadios() {

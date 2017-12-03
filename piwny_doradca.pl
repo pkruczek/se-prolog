@@ -9,8 +9,7 @@ main :-
 
 
 intro :-
-  write('Which beer should I drink today?'), nl,
-  write('To answer, input the number shown next to each answer, followed by a dot (.)'), nl, nl.
+  jpl_call('pl.edu.agh.se.run.gui.IntroGui', intro, [], _).
 
 
 find_beer(Beer) :-
@@ -153,12 +152,10 @@ answer(little_time) :-
 
 % Beer descriptions for the knowledge base
 describe(porter) :-
-  write('Porter'), nl,
-  write('Dark beer, very strong, good beer'), nl.
+  jpl_call('pl.edu.agh.se.run.gui.DescribeGui', describe, ['Porter', 'Dark beer, very strong, good beer'], _).
 
 describe(ipa) :-
-  write('India Pale Ale'), nl,
-  write('Bright beer, light, with fruit scent and flawour'), nl.
+  jpl_call('pl.edu.agh.se.run.gui.DescribeGui', describe, ['India Pale Ale', 'Bright beer, light, with fruit scent and flavour'], _).
 
 % Assigns an answer to questions from the knowledge base
 likes(Answer) :-
@@ -220,8 +217,7 @@ parse(Index, [First|Rest], Response) :-
 % Asks the Question to the user and saves the Answer
 ask(Question, Answer, Choices) :-
   jpl_list_to_array(Choices, JavaArray),
-  jpl_call('pl.edu.agh.se.run.gui.QuestionGui', askQuestion, ['A question', JavaArray], AnInt),
-  write('anInt: '), write(AnInt), nl,
+  jpl_call('pl.edu.agh.se.run.gui.QuestionGui', askQuestion, [Question, JavaArray], AnInt),
   parse(AnInt, Choices, Response),
   asserta(progress(Question, Response)),
   Response = Answer.
