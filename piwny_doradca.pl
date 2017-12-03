@@ -7,6 +7,9 @@ main :-
   find_beer(Beer), nl,
   describe(Beer), nl.
 
+main :-
+  reset_answers,
+  describe(beer_not_found).
 
 intro :-
   jpl_call('pl.edu.agh.se.run.gui.IntroGui', intro, [], _).
@@ -87,7 +90,7 @@ beer(sour_ale) :-
 beer(barley_wine) :-
   color(amber),
   jelly_beans(sweet),
-  drink(craft_beers),
+  drinks(craft_beers),
   bitter(medium),
   eats(pie),
   weather(cold),
@@ -265,6 +268,9 @@ describe(sour_ale) :-
 
 describe(barley_wine) :-
   jpl_call('pl.edu.agh.se.run.gui.DescribeGui', describe, ['Barley wine', 'Beer with amber colour, strong heavy sweet with scent of raisins and malt.'], _).
+
+describe(beer_not_found) :-
+  jpl_call('pl.edu.agh.se.run.gui.DescribeGui', describe, ['Cannot find beer matching your criteria', 'Please try again!'], _).
 
 % Assigns an answer to questions from the knowledge base
 likes(Answer) :-
