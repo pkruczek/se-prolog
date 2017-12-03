@@ -1,92 +1,82 @@
 package pl.edu.agh.se.run.gui;
 
-import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-
-import java.util.ArrayList;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CountDownLatch;
 
 
-public class QuestionGui extends Application {
+public class QuestionGui extends JFrame {
 
-    private static final int QUESTION_INDEX = 0;
-    private static final String ANSWER_ID_KEY = "AnswerId";
+    private List<String> answers;
+    private ButtonGroup buttonGroup = new ButtonGroup();
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
+    private int answered = -1;
 
-    private static final AtomicInteger chosenAnswer = new AtomicInteger(-1);
+    public QuestionGui(String question, String[] answers) throws HeadlessException {
+        super("BeerAdvisor");
+        this.answers = Arrays.asList(answers);
 
-    private final AtomicInteger gridRowCounter = new AtomicInteger(0);
+        setLayout(new GridLayout(answers.length + 2, 1));
 
-    @Override
-    public void start(Stage primaryStage) {
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
+        createQuestionLabel(question);
+        createRadios();
+        createOkButton();
 
-        Text question = new Text(question());
-        grid.addRow(gridRowCounter.getAndIncrement(), question);
+        pack();
+    }
 
-        ToggleGroup group = new ToggleGroup();
-        for (int answerId = 0; answerId < answers().size(); answerId++) {
-            String answer = answers().get(answerId);
-            RadioButton radioButton = new RadioButton(answer);
-            radioButton.getProperties().put(ANSWER_ID_KEY, answerId);
-            radioButton.setToggleGroup(group);
-            grid.addRow(gridRowCounter.getAndIncrement(), radioButton);
+    public int getAnswered() throws InterruptedException {
+        countDownLatch.await();
+        return answered;
+    }
+
+    private Component createQuestionLabel(String question) {
+        return add(new JLabel(question));
+    }
+
+    private void createRadios() {
+        for (String answer : answers) {
+            JRadioButton radioButton = new JRadioButton(answer);
+            radioButton.setActionCommand(answer);
+            add(radioButton);
+            buttonGroup.add(radioButton);
         }
+    }
 
-
-        Button okBtn = new Button("OK");
-        okBtn.setOnAction(event -> {
-            Toggle selectedToggle = group.getSelectedToggle();
-            if (selectedToggle != null) {
-                Integer answerId = (Integer) selectedToggle.getProperties().get(ANSWER_ID_KEY);
-                chosenAnswer.set(answerId);
-                primaryStage.close();
+    private void createOkButton() {
+        JButton okBtn = new JButton("OK");
+        okBtn.addActionListener(event -> {
+            ButtonModel selection = buttonGroup.getSelection();
+            if (selection != null) {
+                String answer = selection.getActionCommand();
+                answered = answers.indexOf(answer);
+                System.out.println(answer + " at index " + answered);
+                countDownLatch.countDown();
+                dispose();
             }
         });
-
-        HBox hbBtn = new HBox(10);
-        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-        hbBtn.getChildren().add(okBtn);
-        grid.addRow(gridRowCounter.getAndIncrement(), hbBtn);
-
-        Scene scene = new Scene(grid);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    private String question() {
-        return getParameters().getRaw().get(QUESTION_INDEX);
-    }
-
-    private List<String> answers() {
-        List<String> params = getParameters().getRaw();
-        return params.subList(QUESTION_INDEX + 1, params.size());
-    }
-
-    public static void main(String[] args) {
-        askQuestion("What is the question", new String[]{"First answer", "second answer"});
+        add(okBtn);
     }
 
     public static int askQuestion(String question, String[] answers) {
-        List<String> args = new ArrayList<>();
-        args.add(question);
-        args.addAll(Arrays.asList(answers));
-        launch(args.toArray(new String[0]));
-        return chosenAnswer.get();
+        QuestionGui questionGui = new QuestionGui(question, answers);
+        questionGui.setVisible(true);
+        try {
+            return questionGui.getAnswered();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        String[] answers = {"one", "two"};
+
+        System.out.println(askQuestion("Question1", answers));
+        System.out.println(askQuestion("Question2", answers));
+        System.out.println(askQuestion("Question3", answers));
+        System.out.println(askQuestion("Question4", answers));
+
     }
 }

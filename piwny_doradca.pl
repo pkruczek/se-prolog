@@ -209,11 +209,19 @@ classic(Answer) :-
   \+ progress(classic, _),
   ask(classic, Answer, [yes, no]).
 
+% Parses an Index and returns a Response representing the "Indexth" element in
+% Choices (the [First|Rest] list)
+parse(0, [First|_], First).
+parse(Index, [First|Rest], Response) :-
+  Index > 0,
+  NextIndex is Index - 1,
+  parse(NextIndex, Rest, Response).
+
 % Asks the Question to the user and saves the Answer
 ask(Question, Answer, Choices) :-
-  question(Question),
   jpl_list_to_array(Choices, JavaArray),
   jpl_call('pl.edu.agh.se.run.gui.QuestionGui', askQuestion, ['A question', JavaArray], AnInt),
-  write('An int:  '), write(AnInt),
+  write('anInt: '), write(AnInt), nl,
+  parse(AnInt, Choices, Response),
   asserta(progress(Question, Response)),
   Response = Answer.
